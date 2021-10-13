@@ -9,9 +9,17 @@ public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String surname;
+
+    @Column(nullable = false)
     private Integer grade;
+
+    @Column(nullable = false)
     private String letter;
 
     public Student() {
@@ -70,7 +78,7 @@ public class Student {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Student student = (Student) o;
-        return id == student.id && name.equals(student.name) && surname.equals(student.surname) && grade.equals(student.grade) && letter.equals(student.letter);
+        return id.equals(student.id) && name.equals(student.name) && surname.equals(student.surname) && grade.equals(student.grade) && letter.equals(student.letter);
     }
 
     @Override
