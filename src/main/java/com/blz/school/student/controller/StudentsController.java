@@ -1,13 +1,12 @@
 package com.blz.school.student.controller;
 
-import com.blz.school.student.StudentDTO;
 import com.blz.school.student.domain.Student;
 import com.blz.school.student.repo.StudentRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -52,6 +51,9 @@ public class StudentsController {
     public void deleteStudent(
             @PathVariable("id") Student student
     ) {
+        student.getEvents().forEach(
+                it -> it.getStudents().remove(student)
+        );
         studentRepository.delete(student);
     }
 }

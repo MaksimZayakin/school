@@ -1,13 +1,19 @@
 package com.blz.school.student.domain;
 
+import com.blz.school.event.domain.Event;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
-@Table
+@Table(name = "student")
 public class Student {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -21,6 +27,10 @@ public class Student {
 
     @Column(nullable = false)
     private String letter;
+
+    @JsonIgnore
+    @ManyToMany(cascade ={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, mappedBy = "students")
+    Set<Event> events = new HashSet<>();
 
     public Student() {
     }
@@ -73,6 +83,14 @@ public class Student {
         this.letter = letter;
     }
 
+    public Set<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(Set<Event> events) {
+        this.events = events;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -84,16 +102,5 @@ public class Student {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, surname, grade, letter);
-    }
-
-    @Override
-    public String toString() {
-        return "Student{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                ", grade=" + grade +
-                ", letter='" + letter + '\'' +
-                '}';
     }
 }
