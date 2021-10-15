@@ -1,7 +1,7 @@
 package com.blz.school.config;
 
-import com.blz.school.student.domain.User;
-import com.blz.school.student.repo.UserDetailsRepository;
+import com.blz.school.user.domain.User;
+import com.blz.school.user.repo.UserDetailsRepository;
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.PrincipalExtractor;
 import org.springframework.context.annotation.Bean;

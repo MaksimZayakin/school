@@ -16,13 +16,6 @@ public class StudentsController {
 
     private final StudentRepository studentRepository;
 
-    private static List<StudentDTO> storedStudents = new LinkedList<>(List.of(
-            new StudentDTO(1L, "Alex", "Green", "5", "B"),
-            new StudentDTO(2L, "Dmitro", "Yellow", "6", "C"),
-            new StudentDTO(3L, "Oleg", "White", "9", "A"),
-            new StudentDTO(4L, "John", "Black", "10", "B")
-    ));
-
     @Autowired
     public StudentsController(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;

@@ -1,4 +1,4 @@
-package com.blz.school.student.domain;
+package com.blz.school.user.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
