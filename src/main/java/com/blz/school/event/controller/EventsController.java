@@ -13,7 +13,6 @@ import java.util.Set;
 @RequestMapping("/events")
 public class EventsController {
     private final EventRepository eventRepository;
-
     @Autowired
     public EventsController(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
@@ -67,5 +66,4 @@ public class EventsController {
             @PathVariable("id") Event event) {
         return event.getStudents();
     }
-
 }

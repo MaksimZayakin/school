@@ -10,6 +10,7 @@ function getIndex(list, id){
 var studentsApi = Vue.resource('/students{/id}');
 var eventsApi = Vue.resource('/events{/id}');
 var eventMembersApi = Vue.resource('/events{/id}/students{/student_id}');
+var eventDownloadApi = Vue.resource('/events{/id}/{name}.csv');
 
 Vue.component('student-form',{
     props: ['students','studentAttr'],
@@ -111,7 +112,7 @@ Vue.component('students-list', {
   template:
     '<div>'+
         '<student-form :students="students" :studentAttr="student" />' +
-        '<student-row style="position: relative; width: 300px" v-for="student in students" :key = "student.id"'+
+        '<student-row style="position: relative; width: 500px" v-for="student in students" :key = "student.id"'+
          ':student="student" :editMethod="editMethod" :students="students" />'+
     '</div>',
   created: function() {
@@ -133,17 +134,26 @@ Vue.component('students-management',{
     data: function() {
         return {
             participants: [],
-            others: []
+            others: [],
         }
     },
     template:
         '<div>'+
+            '<h5>Other students</h5>'+
             '<div v-for="other in others">' +
-                '<div>{{other.name}} {{other.surname}}</div>' +
-                '<input type = "button" value = "Add" @click="add(other)" />' +
+                '<div> {{other.name}} {{other.surname}}' +
+                    '<span style="position: absolute; right: 0">' +
+                        '<input type="button" value="Add" @click="add(other)" />' +
+                    '</span>' +
+                '</div>'+
             '</div>'+
+            '<h5>Participants</h5>'+
             '<div v-for="participant in participants">' +
-                '<div>{{participant.name}} {{participant.surname}}</div>' +
+                '<div>{{participant.name}} {{participant.surname}}'+
+                    '<span style="position: absolute; right: 0">' +
+                        '<input type="button" value="Remove" @click="remove(participant)" />' +
+                    '</span>' +
+                '</div>' +
             '</div>'+
         '</div>',
     created: function() {
@@ -154,16 +164,18 @@ Vue.component('students-management',{
           eventMembersApi.save({id: this.event.id}, other).then(result => this.update());
       },
       remove: function(participant) {
-          eventMembersApi.delete({id: participant.id}).then(result => this.update());
+          eventMembersApi.delete({id: this.event.id, student_id: participant.id}).then(result => this.update());
       },
       update: function() {
-          Array.prototype.diff = function(a) {
-              return this.filter(function(i) {return a.indexOf(i) < 0;});
-          };
           eventMembersApi.get({id: this.event.id}).then(result =>
               result.json().then(data => {
-                data.forEach(student => this.participants.push(student));
-                this.others = this.students.filter(el => !this.participants.includes(el))
+                this.others = this.students.slice();
+                this.participants = [];
+                data.forEach(student => {
+                    this.participants.push(student);
+                    var index = getIndex(this.others, student.id);
+                    this.others.splice(index, 1);
+                })
               })
           )
       }
@@ -211,8 +223,9 @@ Vue.component('event-row',{
             '<span style="position: absolute; right: 0">' +
                 '<input type="button" value="Delete" @click="del" />' +
                 '<input type="button" value="Edit students" @click="switchShow" />' +
+                '<a v-bind:href="`/events/${event.id}/${event.name}.csv`" type="button">Download</a>'+
             '</span>' +
-             '<students-management v-show = "show" :event="event" :students="students"/>' +
+             '<students-management v-if = "show" :event="event" :students="students"/>' +
      '</div>',
      methods: {
         del: function() {
@@ -233,7 +246,7 @@ Vue.component('events-list', {
   template:
     '<div>'+
         '<event-form :events="events"/>' +
-        '<event-row style="position: relative; width: 300px" v-for="event in events" :key = "event.id"'+
+        '<event-row style="position: relative; width: 500px" v-for="event in events" :key = "event.id"'+
          ':event="event" :events="events" :students="students"/>'+
     '</div>',
   created: function() {
@@ -245,13 +258,18 @@ Vue.component('events-list', {
   }
 });
 
+Vue.component('main-view',{
+    props: ['events','students'],
+    template:
+        '<div>'+
+            '<students-list :students="students" />'+
+            '<events-list :events="events" :students="students"/>'+
+        '</div>',
+});
+
 var app = new Vue({
   el: '#app',
-  template:
-    '<div>'+
-        '<students-list :students="students" />'+
-        '<events-list :events="events" :students="students"/>'+
-    '</div>',
+  template: '<main-view :students="students" :events="events" />',
   data: {
     students:[],
     events:[],
